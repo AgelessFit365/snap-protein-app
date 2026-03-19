@@ -307,11 +307,12 @@ export default function Home() {
             </div>
 
             {/* Custom input */}
-            <div className="mt-3 flex gap-3">
+                       <div className="mt-3 flex items-center gap-3">
               <input
                 type="number"
-                placeholder="Custom (g)"
-                className="flex-1 h-12 px-4 rounded-xl border border-slate-300 outline-none"
+                placeholder="Grams"
+                inputMode="numeric"
+                className="w-28 sm:w-36 h-12 px-4 rounded-xl border border-slate-300 outline-none"
                 value={custom}
                 onChange={(e) => setCustom(e.target.value)}
               />
@@ -321,7 +322,7 @@ export default function Home() {
               >
                 Add
               </button>
-            </div>
+            </div> 
           </div>
 
           {/* Shortcuts (editable) */}
@@ -359,10 +360,10 @@ export default function Home() {
             <div className="flex items-center justify-between mb-2">
               <div className="font-semibold">Today</div>
               <div className="flex items-center gap-2">
-                <span className="text-slate-500 text-sm">Target</span>
+                                <span className="text-blue-600 text-sm font-semibold">Target</span>
                 <input
                   type="number"
-                  className="w-16 h-9 text-center rounded-lg border border-slate-300"
+                                  className="w-16 h-9 text-center rounded-lg border border-slate-300 font-medium"  
                   value={targetInput}
                   onChange={(e) => setTargetInput(e.target.value)}
                   onBlur={handleTargetSave}
