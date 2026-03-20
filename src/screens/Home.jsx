@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import posthog from 'posthog-js';
 import { getStorage } from "../state/storage";
 import { updateStreakOnFirstLog, todayISO, isoYesterday } from "../utils/calc";
 import ShortcutEditor from "../components/ShortcutEditor.jsx";
@@ -79,7 +80,7 @@ export default function Home() {
   }
 
   // reliable order: read prefs -> compute streak -> write log -> save prefs
-  async function addProtein(grams, source = "Quick Add") {
+  async function addProtein(grams, source = "Quick Add", method = "quick_add") {
     const g = Number(grams);
     if (!g || g <= 0) return;
 
@@ -106,6 +107,12 @@ export default function Home() {
     };
 
     await storage.addLog(log);
+
+    posthog.capture('protein_logged', {
+  grams: g,
+  method,
+  source,
+});
     setLogs((prev) => [...prev, log]);
 
     // 4) persist prefs and update badge
@@ -130,8 +137,8 @@ export default function Home() {
   }
 
   async function handleCustomAdd() {
-    await addProtein(Number(custom || 0), "Custom");
-  }
+  await addProtein(Number(custom || 0), "Custom", "custom");
+}
 
   async function handleUndo() {
     const last = logs[logs.length - 1];
@@ -250,7 +257,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f9fc] text-slate-900">
+    <div className="min-h-screen bg-[#f6f9fc] text-slate-900">   
       <div className="max-w-2xl mx-auto px-4 pt-8 pb-16">
         {/* Header row with streak badge */}
         <div className="flex items-center justify-between">
@@ -288,19 +295,19 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-3">
               <button
                 className="h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-sm hover:opacity-95"
-                onClick={() => addProtein(20)}
+                onClick={() => addProtein(20, "Quick Add", "quick_add")}
               >
                 +20g
               </button>
               <button
                 className="h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-sm hover:opacity-95"
-                onClick={() => addProtein(25)}
+                onClick={() => addProtein(25, "Quick Add", "quick_add")}
               >
                 +25g
               </button>
               <button
                 className="h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-sm hover:opacity-95"
-                onClick={() => addProtein(30)}
+                onClick={() => addProtein(30, "Quick Add", "quick_add")}
               >
                 +30g
               </button>
@@ -335,7 +342,7 @@ export default function Home() {
                 <div key={i} className="relative">
                   <button
                     className="w-full h-16 rounded-xl border border-slate-300 hover:bg-slate-50 text-left px-4"
-                    onClick={() => addProtein(s.grams, s.name)}
+                    onClick={() => addProtein(s.grams, s.name, "shortcut")}
                     title={`${s.name} • ${s.grams}g`}
                   >
                     <div className="font-semibold">{s.name || "Shortcut"}</div>
