@@ -208,12 +208,14 @@ export default function Home() {
   }
 
   async function handleSkipTour() {
-    await closeTourAndSaveSeen();
-  }
+  posthog.capture('tour_skipped');
+  await closeTourAndSaveSeen();
+}
 
-  async function handleFinishTour() {
-    await closeTourAndSaveSeen();
-  }
+async function handleFinishTour() {
+  posthog.capture('tour_completed');
+  await closeTourAndSaveSeen();
+}
 
   // DEV: simulate "new day" — move today's logs to yesterday + prep streak
   async function simulateNewDay() {
